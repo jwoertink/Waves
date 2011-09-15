@@ -12,6 +12,8 @@ This may eventually lead to a video game project generator similar to Rails
   JRuby 1.6+
   Bundler gem
 
+== jMonkeyEngine
+http://jmonkeyengine.org/wiki/doku.php/jme3:beginner:hello_simpleapplication
 
 == Contributing to waves
  
