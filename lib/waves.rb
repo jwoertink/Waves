@@ -28,6 +28,12 @@ class Waves < SimpleApplication
     material2.set_color("Color", ColorRGBA::Red)
     red.material = material2
     
+    mesh = Box.new(Vector3f::ZERO, 1, 1, 1)
+    thing = Geometry.new("thing", mesh)
+    mat = Material.new(asset_manager, File.join('Common', 'MatDefs', 'Misc', 'ShowNormals.j3md'))
+    thing.set_material(mat)
+    self.root_node.attach_child(thing)
+    
     pivot = Node.new("pivot")
     self.root_node.attach_child(pivot)
     pivot.attach_child(blue)
