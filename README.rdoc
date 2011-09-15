@@ -1,6 +1,17 @@
 = waves
 
-Description goes here.
+This is just some JRuby(http://jruby.org/) and jMonkeyEngine(http://jmonkeyengine.com/) fun.
+This may eventually lead to a video game project generator similar to Rails
+
+== Running
+  rake console
+  require 'waves'
+  Waves.new.start
+
+== Requirements
+  JRuby 1.6+
+  Bundler gem
+
 
 == Contributing to waves
  
