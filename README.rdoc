@@ -6,9 +6,16 @@ This may eventually lead to a video game project generator similar to Rails
 == Running
   rake console
   require 'waves'
-  Waves.new.start
+  Waves.start
+
+You can view the different samples with 
+  Waves.start("sample2")
+  Waves.start("sample3")
+  
+sample1 is loaded by default.
 
 == Requirements
+  OSX (Because I haven't tried this on anything else)
   JRuby 1.6+
   Bundler gem
 
