@@ -1,3 +1,8 @@
+=begin
+  This sample takes a ninja, teapot, and a brick wall, and positions them on screen
+  You can use 'W' 'A' 'S' 'D' to move around. 'Q' and 'Z' allow you to move up and down.
+=end
+
 
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.font.BitmapText"

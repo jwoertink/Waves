@@ -1,3 +1,8 @@
+=begin
+  This sample takes 3 boxes, and positions them onto the screen.
+  You can use 'W' 'A' 'S' 'D' to move around. 'Q' and 'Z' allow you to move up and down.
+=end
+
 
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.material.Material"
