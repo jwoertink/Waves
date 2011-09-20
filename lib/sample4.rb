@@ -14,6 +14,7 @@ java_import "com.jme3.input.controls.MouseButtonTrigger"
 class Sample4 < SimpleApplication
   
   def initialize
+    @root_node = root_node
     @is_running = true
   end
   
@@ -37,37 +38,28 @@ class Sample4 < SimpleApplication
     input_manager.add_listener(analog_listener, ["Left", "Right", "Rotate"].to_java(:string))
   end
     
-    # def action_listener 
-    #   Class.new {
-    #     include ActionListener
-    #     def on_action(name, key_pressed, time_per_frame)
-    #       if name.eql?("Pause") && !key_pressed
-    #         @is_running = !@is_running
-    #       end
-    #     end
-    #   }.new
-    # end
-    # 
-    # def action_listener 
-    #   ActionListener.new {
-    #     def on_action(name, key_pressed, time_per_frame)
-    #       @is_running = !@is_running if name.eql?("Pause") && !key_pressed
-    #     end
-    #   }
-    # end
-    
-    def action_listener
-      ActionListener.impl {
+    def action_listener 
+      Class.new {
+        include ActionListener
         def on_action(name, key_pressed, time_per_frame)
-          @is_running = !@is_running if name.eql?("Pause") && !key_pressed
+          if name.eql?("Pause") && !key_pressed
+            @is_running = !@is_running
+          end
         end
-      }
+      }.new
     end
     
     def analog_listener 
       Class.new {
         include AnalogListener
+        
+        def initialize
+          @player = @root_node.get_child("Player")
+        end
+        
         def on_analog(name, value, time_per_frame)
+          puts "running analog #{name}"
+          puts "player: #{@player.inspect}"
           if @is_running
             case name
             when "Rotate"
