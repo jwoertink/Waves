@@ -1,7 +1,7 @@
 = waves
 
 This is just some JRuby(http://jruby.org/) and jMonkeyEngine(http://jmonkeyengine.com/) fun.
-This may eventually lead to a video game project generator similar to Rails
+Currently these are all samples from the jMonkeyEngine Hello tutorials re-written in JRuby. There are a few small modifications.
 
 == Running
   rake console
@@ -9,10 +9,13 @@ This may eventually lead to a video game project generator similar to Rails
   Waves.start
 
 You can view the different samples with 
-  Waves.start("sample2")
-  Waves.start("sample3")
+  Waves.start("2")
+  Waves.start("3")
   
 sample1 is loaded by default.
+
+You can see all the sample names with
+  Waves.samples
 
 == Requirements
   OSX (Because I haven't tried this on anything else)
