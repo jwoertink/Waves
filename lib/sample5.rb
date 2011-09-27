@@ -44,7 +44,6 @@ class Sample5 < SimpleApplication
     rock.texture_mode = Sphere::TextureMode::Projected
     TangentBinormalGenerator.generate(rock)
     mat_lit = Material.new(asset_manager, File.join("Common", "MatDefs", "Light", "Lighting.j3md"))
-    # This texture seems to be missing....
     mat_lit.set_texture("DiffuseMap", asset_manager.load_texture(File.join("Textures", "Terrain", "Pond", "Pond.jpg")))
     mat_lit.set_texture("NormalMap", asset_manager.load_texture(File.join("Textures", "Terrain", "Pond", "Pond_normal.png")))
     mat_lit.set_float("Shininess", 5.0)
