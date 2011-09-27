@@ -10,6 +10,8 @@ java_import "com.jme3.light.DirectionalLight"
 java_import "com.jme3.math.ColorRGBA"
 java_import "com.jme3.math.Vector3f"
 java_import "com.jme3.scene.Node"
+java_import "com.jme3.scene.debug.SkeletonDebugger"
+java_import "com.jme3.material.Material"
 
 class Sample6 < SimpleApplication
   include AnimEventListener
@@ -33,6 +35,13 @@ class Sample6 < SimpleApplication
     control.add_listener(self)
     self.channel = control.create_channel
     channel.anim = "stand"
+    
+    skeleton_debug = SkeletonDebugger.new("skeleton", control.skeleton)
+    mat = Material.new(asset_manager, "Common/MatDefs/Misc/Unshaded.j3md")
+    mat.set_color("Color", ColorRGBA::Green)
+    mat.additional_render_state.depth_test = false
+    skeleton_debug.material = mat
+    @player.attach_child(skeleton_debug)
     init_keys!
   end
   
