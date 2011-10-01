@@ -3,6 +3,17 @@
 This is just some JRuby(http://jruby.org/) and jMonkeyEngine(http://jmonkeyengine.com/) fun.
 Currently these are all samples from the jMonkeyEngine Hello tutorials re-written in JRuby. There are a few small modifications.
 
+== Installation
+(rvm not required, but it's awesome)
+  rvm install jruby
+  git clone git://github.com/jwoertink/Waves.git
+  cd Waves
+  rvm gemset create @waves
+  rvm use @waves
+  gem install bundler
+  bundle
+
+You should be good at this point.
 == Running
 The main application can be run by
   jruby bin/waves
