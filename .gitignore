@@ -8,3 +8,4 @@ pkg
 *.tmproj
 tmtags
 Gemfile.lock
+*.gemspec

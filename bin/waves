@@ -1,0 +1,10 @@
+#!/usr/bin/ruby
+# -*- coding: utf-8 -*-
+
+require 'rubygems'
+$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+require 'waves'
+
+sample = ARGV[0] || "1"
+
+Waves.start(sample)

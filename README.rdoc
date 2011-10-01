@@ -4,18 +4,13 @@ This is just some JRuby(http://jruby.org/) and jMonkeyEngine(http://jmonkeyengin
 Currently these are all samples from the jMonkeyEngine Hello tutorials re-written in JRuby. There are a few small modifications.
 
 == Running
-  rake console
-  require 'waves'
-  Waves.start
-
-You can view the different samples with 
-  Waves.start("2")
-  Waves.start("3")
+The main application can be run by
+  jruby bin/waves
   
-sample1 is loaded by default.
-
-You can see all the sample names with
-  Waves.samples
+You can view other samples by passing the sample number as an argument
+  jruby bin/waves 8
+  
+Normal camera operations use W A S D to move. To exit just hit esc.
 
 == Requirements
   OSX (Because I haven't tried this on anything else)
