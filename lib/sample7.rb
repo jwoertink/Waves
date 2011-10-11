@@ -1,6 +1,8 @@
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.collision.CollisionResult"
 java_import "com.jme3.collision.CollisionResults"
+java_import "com.jme3.bullet.collision.shapes.CapsuleCollisionShape"
+java_import "com.jme3.bullet.collision.shapes.CollisionShape"
 java_import "com.jme3.font.BitmapText"
 java_import "com.jme3.input.KeyInput"
 java_import "com.jme3.input.MouseInput"

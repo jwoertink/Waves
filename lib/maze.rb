@@ -6,22 +6,29 @@ PROJECT_ROOT = File.expand_path('..', File.dirname(__FILE__))
 require File.join(PROJECT_ROOT, 'vendor', 'jme3_2011-08-29.jar')
 
 java_import "com.jme3.app.SimpleApplication"
+java_import "com.jme3.font.BitmapText"
 java_import "com.jme3.bullet.BulletAppState"
 java_import "com.jme3.bullet.collision.shapes.CapsuleCollisionShape"
 java_import "com.jme3.bullet.collision.shapes.CollisionShape"
+java_import "com.jme3.collision.CollisionResult"
+java_import "com.jme3.collision.CollisionResults"
 java_import "com.jme3.bullet.control.CharacterControl"
 java_import "com.jme3.bullet.control.RigidBodyControl"
 java_import "com.jme3.bullet.util.CollisionShapeFactory"
 java_import "com.jme3.input.KeyInput"
 java_import "com.jme3.input.controls.ActionListener"
 java_import "com.jme3.input.controls.KeyTrigger"
+java_import "com.jme3.input.MouseInput"
+java_import "com.jme3.input.controls.MouseButtonTrigger"
 java_import "com.jme3.light.AmbientLight"
 java_import "com.jme3.light.DirectionalLight"
 java_import "com.jme3.math.ColorRGBA"
 java_import "com.jme3.math.Vector3f"
+java_import "com.jme3.math.Ray"
 java_import "com.jme3.scene.Node"
 java_import "com.jme3.scene.Spatial"
 java_import "com.jme3.scene.shape.Box"
+java_import "com.jme3.scene.shape.Sphere"
 java_import "com.jme3.scene.Geometry"
 java_import "com.jme3.material.Material"
 
@@ -29,8 +36,8 @@ class Maze < SimpleApplication
   include ActionListener
   
   field_accessor :flyCam
-  field_reader :cam
-  attr_accessor :bullet_app_state, :player
+  field_reader :cam, :settings
+  attr_accessor :bullet_app_state, :player, :mark, :shootables
   
   def initialize
     [:up, :down, :left, :right].each { |direction| self.instance_variable_set("@#{direction}", false) }
@@ -44,7 +51,7 @@ class Maze < SimpleApplication
     state_manager.attach(bullet_app_state)
     view_port.background_color = ColorRGBA.new(ColorRGBA.random_color)
     
-    capsule_shape = CapsuleCollisionShape.new(1.5, 6.0, 1)
+    capsule_shape = CapsuleCollisionShape.new(1.5, 15.0, 1)
     self.player = CharacterControl.new(capsule_shape, 0.05)
     player.jump_speed = 20
     player.fall_speed = 30
@@ -52,6 +59,13 @@ class Maze < SimpleApplication
     player.physics_location = Vector3f.new(-185, 15, -95)
     bullet_app_state.physics_space.add(player)
     
+    sphere = Sphere.new(30, 30, 0.2)
+    self.mark = Geometry.new("BOOM!", sphere)
+    mark_mat = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
+    mark_mat.set_color("Color", ColorRGBA::Red)
+    mark.material = mark_mat
+    
+    setup_text!
     setup_camera!
     setup_floor!
     setup_keys!
@@ -278,6 +292,7 @@ class Maze < SimpleApplication
     starting_left = -(@floor[:width] - @wall[:width])
     us_start = -@floor[:height]
     pipe_start = us_start - @wall[:width]
+    create_wall(starting_left, 10, pipe_start + 20, 0, 10, 10, "start.jpg")
     rows.each_with_index do |step, row|
       puts "Row #{row + 1}"
       step.split(//).each_with_index do |type, col|
@@ -327,12 +342,12 @@ class Maze < SimpleApplication
   #  bx = x width
   #  by = height
   #  bz = y width
-  def create_wall(vx, vy, vz, bx, by, bz)
+  def create_wall(vx, vy, vz, bx, by, bz, image = 'brickwall.jpg')
     box = Box.new(Vector3f.new(vx, vy, vz), bx, by, bz)
     wall = Geometry.new("a Wall", box)
     matl = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
     #matl.set_color("Color", ColorRGBA::Gray)
-    matl.set_texture("ColorMap", asset_manager.load_texture(File.join('assets', 'Textures', 'brickwall.jpg')))
+    matl.set_texture("ColorMap", asset_manager.load_texture(File.join('assets', 'Textures', image)))
     wall.material = matl
     scene_shape = CollisionShapeFactory.create_mesh_shape(wall)
     landscape = RigidBodyControl.new(scene_shape, 0)
@@ -356,10 +371,28 @@ class Maze < SimpleApplication
     input_manager.add_mapping("Right", KeyTrigger.new(KeyInput::KEY_D))
     input_manager.add_mapping("Up",    KeyTrigger.new(KeyInput::KEY_W))
     input_manager.add_mapping("Down",  KeyTrigger.new(KeyInput::KEY_S))
+    input_manager.add_mapping("Shoot", KeyTrigger.new(KeyInput::KEY_SPACE), MouseButtonTrigger.new(MouseInput::BUTTON_LEFT))
     input_manager.add_listener(ControllerAction.new(self), "Left")
     input_manager.add_listener(ControllerAction.new(self), "Right")
     input_manager.add_listener(ControllerAction.new(self), "Up")
     input_manager.add_listener(ControllerAction.new(self), "Down")
+    input_manager.add_listener(ControllerAction.new(self), "Shoot")
+  end
+  
+  def setup_text!
+    gui_node.detach_all_children
+    gui_font = asset_manager.load_font(File.join("Interface", "Fonts", "Default.fnt"))
+    ch = BitmapText.new(gui_font, false)
+    ch.size = gui_font.char_set.rendered_size * 2
+    ch.text = "+"
+    ch.set_local_translation(settings.width / 2 - gui_font.char_set.rendered_size / 3 * 2, settings.height / 2 + ch.line_height / 2, 0)
+    gui_node.attach_child(ch)
+    
+    ch2 = BitmapText.new(gui_font, false)
+    ch2.size = 20
+    ch2.text = "PLAY TIME:"
+    ch2.set_local_translation(0, 0, 0)
+    gui_node.attach_child(ch2)
   end
   
   def simpleUpdate(tpf)
@@ -372,6 +405,9 @@ class Maze < SimpleApplication
     @walk_direction.add_local(cam_dir.negate) if @down
     player.walk_direction = @walk_direction
     cam.location = player.physics_location
+    if cam.location.x > (@floor[:width] - 10) && cam.location.z > (@floor[:height] - 10)
+      puts "FINISH!"
+    end
   end
   
   class ControllerAction
@@ -383,6 +419,24 @@ class Maze < SimpleApplication
     
     def on_action(binding, value, tpf)
       @parent.instance_variable_set("@#{binding.downcase}", value)
+      if binding.eql?("Shoot") && !value
+        results = CollisionResults.new
+        ray = Ray.new(@parent.cam.location, @parent.cam.direction)
+        @parent.root_node.collide_with(ray, results)
+        results.each_with_index do |result, index|
+          dist = results.get_collision(index).distance
+          pt = results.get_collision(index).contact_point
+          hit = results.get_collision(index).geometry.name
+        end
+        
+        if results.size > 0
+          closest = results.closest_collision
+          @parent.mark.local_translation = closest.contact_point
+          @parent.root_node.attach_child(@parent.mark)
+        else
+          @parent.root_node.detach_child(@parent.mark)
+        end
+      end
     end
     
   end
