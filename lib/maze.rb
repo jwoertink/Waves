@@ -6,7 +6,9 @@ PROJECT_ROOT = File.expand_path('..', File.dirname(__FILE__))
 require File.join(PROJECT_ROOT, 'vendor', 'jme3_2011-08-29.jar')
 
 java_import "com.jme3.app.SimpleApplication"
+java_import "com.jme3.system.AppSettings"
 java_import "com.jme3.font.BitmapText"
+java_import "com.jme3.audio.AudioNode"
 java_import "com.jme3.bullet.BulletAppState"
 java_import "com.jme3.bullet.collision.shapes.CapsuleCollisionShape"
 java_import "com.jme3.bullet.collision.shapes.CollisionShape"
@@ -31,19 +33,25 @@ java_import "com.jme3.scene.shape.Box"
 java_import "com.jme3.scene.shape.Sphere"
 java_import "com.jme3.scene.Geometry"
 java_import "com.jme3.material.Material"
+java_import "com.jme3.util.SkyFactory"
 
 class Maze < SimpleApplication
   include ActionListener
   
   field_accessor :flyCam
   field_reader :cam, :settings
-  attr_accessor :bullet_app_state, :player, :mark, :shootables
+  attr_accessor :playtime, :playing, :bullet_app_state, :player, :mark, :shootables, :gun_sound, :ambient_noise
   
   def initialize
+    super
     [:up, :down, :left, :right].each { |direction| self.instance_variable_set("@#{direction}", false) }
     @walk_direction = Vector3f.new
     @floor = {:width => 200, :height => 100}
     @wall = {:width => 10, :height => 20}
+    self.playing = false
+    config = AppSettings.new(true)
+    config.settings_dialog_image = File.join("assets", "Interface", "maze_craze_logo.png")
+    self.settings = config
   end
   
   def simpleInitApp
@@ -68,209 +76,17 @@ class Maze < SimpleApplication
     setup_text!
     setup_camera!
     setup_floor!
+    setup_sky!
     setup_keys!
     setup_light!
+    setup_audio!
     
     generate_dynamic_maze
-    #generate_static_maze    
+    #generate_static_maze  
   end
   
   def generate_static_maze
-    # Row 1
-    create_wall(-190, 20, -100, 10, 20, 0) # _
-    create_wall(-170, 20, -100, 10, 20, 0) # _
-    create_wall(-150, 20, -100, 10, 20, 0) # _
-    create_wall(-130, 20, -100, 10, 20, 0) # _
-    create_wall(-110, 20, -100, 10, 20, 0) # _
-    create_wall(-90, 20, -100, 10, 20, 0) # _
-    create_wall(-70, 20, -100, 10, 20, 0) # _
-    create_wall(-50, 20, -100, 10, 20, 0) # _
-    create_wall(-30, 20, -100, 10, 20, 0) # _
-    create_wall(-10, 20, -100, 10, 20, 0) # _
-    create_wall( 10, 20, -100, 10, 20, 0) # _
-    create_wall( 30, 20, -100, 10, 20, 0) # _
-    create_wall( 50, 20, -100, 10, 20, 0) # _
-    create_wall( 70, 20, -100, 10, 20, 0) # _
-    create_wall( 90, 20, -100, 10, 20, 0) # _
-    create_wall(110, 20, -100, 10, 20, 0) # _
-    create_wall(130, 20, -100, 10, 20, 0) # _
-    create_wall(150, 20, -100, 10, 20, 0) # _
-    create_wall(170, 20, -100, 10, 20, 0) # _
-    create_wall(190, 20, -100, 10, 20, 0) # _
-    create_wall(210, 20, -100, 10, 20, 0) # _
-    
-    # Row 2
-    ' '
-    ' '
-    create_wall(-150, 20, -90, 10, 20, 10) # |
-    ' '
-    ' '
-    create_wall(-90, 20, -80, 10, 20, 0) # _
-    create_wall(-70, 20, -80, 10, 20, 0) # _
-    create_wall(-50, 20, -80, 10, 20, 0) # _
-    create_wall(-30, 20, -80, 10, 20, 0) # _
-    create_wall(-10, 20, -80, 10, 20, 0) # _
-    ' '
-    ' '
-    ' '
-    create_wall(70, 20, -80, 10, 20, 0) # _
-    create_wall(90, 20, -80, 10, 20, 0) # _
-    create_wall(110, 20, -80, 10, 20, 0) # _
-    create_wall(130, 20, -80, 10, 20, 0) # _
-    create_wall(150, 20, -80, 10, 20, 0) # _
-    ' '
-    ' '
-    create_wall(210, 20, -90, 10, 20, 10) # |
-    
-    # Row 3
-    create_wall(-190, 20, -70, 10, 20, 10) # |
-    ' '
-    create_wall(-150, 20, -70, 10, 20, 10) # |
-    create_wall(-130, 20, -60, 10, 20, 0) # _
-    ' '
-    ' '
-    create_wall(-70, 20, -70, 10, 20, 10) # |
-    create_wall(-50, 20, -60, 10, 20, 0) # _
-    ' '
-    ' '
-    create_wall(10, 20, -70, 10, 20, 10) # |
-    ' '
-    create_wall(50, 20, -70, 10, 20, 10) # |
-    ' '
-    ' '
-    ' '
-    create_wall(130, 20, -70, 10, 20, 10) # |
-    ' '
-    create_wall(170, 20, -70, 10, 20, 10) # |
-    ' '
-    create_wall(210, 20, -70, 10, 20, 10) # |
-    
-    # Row 4
-    create_wall(-190, 20, -50, 10, 20, 10) # |
-    ' '
-    ' '
-    create_wall(-130, 20, -40, 10, 20, 0) # _
-    create_wall(-110, 20, -50, 10, 20, 10) # |
-    ' '
-    create_wall(-70, 20, -50, 10, 20, 10) # |
-    ' '
-    ' '
-    ' '
-    create_wall(10, 20, -50, 10, 20, 10) # |
-    create_wall(30, 20, -40, 10, 20, 0) # _
-    create_wall(50, 20, -40, 10, 20, 0) # _
-    create_wall(70, 20, -40, 10, 20, 0) # _
-    create_wall(90, 20, -50, 10, 20, 10) # |
-    ' '
-    create_wall(130, 20, -50, 10, 20, 10) # |
-    create_wall(150, 20, -40, 10, 20, 0) # _
-    create_wall(170, 20, -40, 10, 20, 0) # _
-    create_wall(190, 20, -40, 10, 20, 0) # _
-    create_wall(210, 20, -50, 10, 20, 10) # |
-    
-    # Row 5
-    create_wall(-190, 20, -30, 10, 20, 10) # |
-    ' '
-    ' '
-    ' '
-    create_wall(-110, 20, -30, 10, 20, 10) # |
-    create_wall(-90, 20, -20, 10, 20, 0) # _
-    create_wall(-70, 20, -20, 10, 20, 0) # _
-    create_wall(-50, 20, -20, 10, 20, 0) # _
-    create_wall(-30, 20, -30, 10, 20, 10) # |
-    ' '
-    create_wall(10, 20, -30, 10, 20, 10) # |
-    ' '
-    ' '
-    ' '
-    create_wall(90, 20, -30, 10, 20, 10) # |
-    create_wall(110, 20, -20, 10, 20, 0) # _
-    create_wall(130, 20, -20, 10, 20, 0) # _
-    create_wall(150, 20, -20, 10, 20, 0) # _
-    ' '
-    ' '
-    create_wall(210, 20, -30, 10, 20, 10) # |
-    
-    # Row 6
-    create_wall(-190, 20, -10, 10, 20, 10) # |
-    create_wall(-170, 20,  0, 10, 20, 0) # _
-    create_wall(-150, 20, -10, 10, 20, 10) # |
-    ' '
-    ' '
-    ' '
-    create_wall(-70, 20, -10, 10, 20, 10) # |
-    ' '
-    ' '
-    create_wall(-10, 20,  0, 10, 20, 0) # _
-    create_wall(10, 20, -10, 10, 20, 10) # |
-    create_wall(30, 20,  0, 10, 20, 0) # _
-    create_wall(50, 20, -10, 10, 20, 10) # |
-    ' '
-    ' '
-    ' '
-    ' '
-    ' '
-    create_wall(170, 20, -10, 10, 20, 10) # |
-    ' '
-    create_wall(210, 20, -10, 10, 20, 10) # |
-    
-    # Row 7
-    create_wall(-190, 20, 10, 10, 20, 10) # |
-    ' '
-    ' '
-    create_wall(-130, 20, 20, 10, 20, 0) # _
-    create_wall(-110, 20, 10, 10, 20, 10) # |
-    create_wall(-90, 20, 20, 10, 20, 0) # _
-    create_wall(-70, 20, 10, 10, 20, 10) # |
-    create_wall(-50, 20, 20, 10, 20, 0) # _
-    create_wall(-30, 20, 20, 10, 20, 0) # _
-    create_wall(-10, 20, 20, 10, 20, 0) # _
-    ' '
-    ' '
-    create_wall(50, 20, 10, 10, 20, 10) # |
-    ' '
-    create_wall(90, 20, 10, 10, 20, 10) # |
-    ' '
-    create_wall(130, 20, 10, 10, 20, 10) # |
-    create_wall(150, 20, 20, 10, 20, 0) # _
-    create_wall(170, 20, 10, 10, 20, 10) # |
-    create_wall(190, 20, 20, 10, 20, 0) # _
-    create_wall(210, 20, 10, 10, 20, 10) # |
-    
-    # Row 8
-    create_wall(-190, 20, 30, 10, 20, 10) # |
-    ' '
-    create_wall(-150, 20, 30, 10, 20, 10) # |
-    ' '
-    ' '
-    ' '
-    create_wall(-70, 20, 30, 10, 20, 10) # |
-    ' '
-    ' '
-    create_wall(-10, 20, 40, 10, 20, 0) # _
-    create_wall(10, 20, 40, 10, 20, 0) # _
-    create_wall(30, 20, 40, 10, 20, 0) # _
-    create_wall(50, 20, 30, 10, 20, 10) # |
-    create_wall(70, 20, 40, 10, 20, 0) # _
-    create_wall(90, 20, 30, 10, 20, 10) # |
-    create_wall(110, 20, 40, 10, 20, 0) # _
-    ' '
-    ' '
-    ' '
-    ' '
-    create_wall(210, 20, 30, 10, 20, 10) # |
-    
-    # Row 9
-    create_wall(-190, 20, 50, 10, 20, 10) # |
-    ' '
-    
-    
-    # Row 10
-    create_wall(-190, 20, 70, 10, 20, 10) # |
-    
-    # Row 11
-    create_wall(-190, 20, 90, 10, 20, 10) # |
-        maze = 
+    maze = 
     <<-MAZE
     _____________________
       |  _____   _____  |
@@ -292,7 +108,10 @@ class Maze < SimpleApplication
     starting_left = -(@floor[:width] - @wall[:width])
     us_start = -@floor[:height]
     pipe_start = us_start - @wall[:width]
+    #Start wall
     create_wall(starting_left, 10, pipe_start + 20, 0, 10, 10, "start.jpg")
+    #End wall
+    create_wall(@floor[:width] + 10, 0, @floor[:height] - 10, 10, 0, 10, "stop.jpg")
     rows.each_with_index do |step, row|
       puts "Row #{row + 1}"
       step.split(//).each_with_index do |type, col|
@@ -310,7 +129,7 @@ class Maze < SimpleApplication
       end
     end
     
-    puts "\n\n#{maze}\n\n"
+    #puts "\n\n#{maze}\n\n"
   end
   
   
@@ -331,6 +150,11 @@ class Maze < SimpleApplication
     root_node.attach_child(floor)
   end
   
+  def setup_sky!
+    root_node.attach_child(SkyFactory.create_sky(asset_manager, File.join("Textures", "Sky", "Bright", "BrightSky.dds"), false))
+    
+  end
+  
   #  vx = x position
   #   '_' => -(floor_width - wall_width)
   #   '|' => -floor_height
@@ -346,7 +170,6 @@ class Maze < SimpleApplication
     box = Box.new(Vector3f.new(vx, vy, vz), bx, by, bz)
     wall = Geometry.new("a Wall", box)
     matl = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
-    #matl.set_color("Color", ColorRGBA::Gray)
     matl.set_texture("ColorMap", asset_manager.load_texture(File.join('assets', 'Textures', image)))
     wall.material = matl
     scene_shape = CollisionShapeFactory.create_mesh_shape(wall)
@@ -391,8 +214,23 @@ class Maze < SimpleApplication
     ch2 = BitmapText.new(gui_font, false)
     ch2.size = 20
     ch2.text = "PLAY TIME:"
-    ch2.set_local_translation(0, 0, 0)
+    ch2.set_local_translation(50, 50, 0)
     gui_node.attach_child(ch2)
+  end
+  
+  def setup_audio!
+    self.gun_sound = AudioNode.new(asset_manager, File.join("Sound", "Effects", "Gun.wav"), false)
+    gun_sound.looping = false
+    gun_sound.volume = 2
+    root_node.attach_child(gun_sound)
+    
+    self.ambient_noise = AudioNode.new(asset_manager, File.join("Sound", "Environment", "Nature.ogg"), false)
+    ambient_noise.looping = true
+    ambient_noise.positional = true
+    ambient_noise.local_translation = Vector3f::ZERO.clone
+    ambient_noise.volume = 3
+    root_node.attach_child(ambient_noise)
+    ambient_noise.play
   end
   
   def simpleUpdate(tpf)
@@ -405,8 +243,15 @@ class Maze < SimpleApplication
     @walk_direction.add_local(cam_dir.negate) if @down
     player.walk_direction = @walk_direction
     cam.location = player.physics_location
-    if cam.location.x > (@floor[:width] - 10) && cam.location.z > (@floor[:height] - 10)
+    unless playing
+      self.playing = true
+      self.playtime = Time.now
+    end
+    if cam.location.x > (@floor[:width] - 10) && cam.location.z > (@floor[:height] - 10) && playing
+      self.playing = false
       puts "FINISH!"
+      finish_time = Time.now - playtime
+      puts "COMPLETED IN: #{finish_time}"
     end
   end
   
@@ -420,13 +265,18 @@ class Maze < SimpleApplication
     def on_action(binding, value, tpf)
       @parent.instance_variable_set("@#{binding.downcase}", value)
       if binding.eql?("Shoot") && !value
+        @parent.gun_sound.play_instance
         results = CollisionResults.new
         ray = Ray.new(@parent.cam.location, @parent.cam.direction)
         @parent.root_node.collide_with(ray, results)
         results.each_with_index do |result, index|
-          dist = results.get_collision(index).distance
-          pt = results.get_collision(index).contact_point
-          hit = results.get_collision(index).geometry.name
+          collision = results.get_collision(index)
+          dist = collision.distance
+          pt = collision.contact_point
+          spacial = collision.geometry
+          hit = spacial.name
+          @parent.root_node.detach_child(spacial)
+          @parent.root_node.detach_child(@parent.mark)
         end
         
         if results.size > 0
@@ -443,4 +293,5 @@ class Maze < SimpleApplication
   
 end
 
-Maze.new.start
+@app = Maze.new
+@app.start
