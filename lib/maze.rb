@@ -52,12 +52,13 @@ class Maze < SimpleApplication
     config = AppSettings.new(true)
     config.settings_dialog_image = File.join("assets", "Interface", "maze_craze_logo.png")
     self.settings = config
+    @time_text = nil
+    @counter = 0
   end
   
   def simpleInitApp
     self.bullet_app_state = BulletAppState.new
     state_manager.attach(bullet_app_state)
-    view_port.background_color = ColorRGBA.new(ColorRGBA.random_color)
     
     capsule_shape = CapsuleCollisionShape.new(1.5, 15.0, 1)
     self.player = CharacterControl.new(capsule_shape, 0.05)
@@ -65,7 +66,12 @@ class Maze < SimpleApplication
     player.fall_speed = 30
     player.gravity = 30
     player.physics_location = Vector3f.new(-185, 15, -95)
-    bullet_app_state.physics_space.add(player)
+    player_model = asset_manager.load_model(File.join("Models", "Oto", "Oto.mesh.xml"))
+    player_model.local_scale = 0.5
+    player_model.local_translation = Vector3f.new(-185, 15, -95)
+    player_model.add_control(player)
+    bullet_app_state.physics_space.add(player_model)
+    
     
     sphere = Sphere.new(30, 30, 0.2)
     self.mark = Geometry.new("BOOM!", sphere)
@@ -82,7 +88,9 @@ class Maze < SimpleApplication
     setup_audio!
     
     generate_dynamic_maze
-    #generate_static_maze  
+
+    self.playing = true
+    self.playtime = Time.now
   end
   
   def generate_static_maze
@@ -125,6 +133,7 @@ class Maze < SimpleApplication
           create_wall(move_right, @wall[:height], pipe_move_down, @wall[:width], @wall[:height], 10)
         when " "
           # This is a space
+          # Randomly generate a golem
         end
       end
     end
@@ -135,6 +144,7 @@ class Maze < SimpleApplication
   
   def setup_camera!
     flyCam.move_speed = 100
+    cam.look_at_direction(Vector3f.new(10, 0, 0).normalize_local, Vector3f::UNIT_Y)
   end
   
   def setup_floor!
@@ -152,7 +162,7 @@ class Maze < SimpleApplication
   
   def setup_sky!
     root_node.attach_child(SkyFactory.create_sky(asset_manager, File.join("Textures", "Sky", "Bright", "BrightSky.dds"), false))
-    
+    #view_port.background_color = ColorRGBA.new(ColorRGBA.random_color)
   end
   
   #  vx = x position
@@ -211,11 +221,11 @@ class Maze < SimpleApplication
     ch.set_local_translation(settings.width / 2 - gui_font.char_set.rendered_size / 3 * 2, settings.height / 2 + ch.line_height / 2, 0)
     gui_node.attach_child(ch)
     
-    ch2 = BitmapText.new(gui_font, false)
-    ch2.size = 20
-    ch2.text = "PLAY TIME:"
-    ch2.set_local_translation(50, 50, 0)
-    gui_node.attach_child(ch2)
+    @time_text = BitmapText.new(gui_font, false)
+    @time_text.size = 20
+    @time_text.text = "PLAY TIME:"
+    @time_text.set_local_translation(50, 50, 0)
+    gui_node.attach_child(@time_text)
   end
   
   def setup_audio!
@@ -234,6 +244,7 @@ class Maze < SimpleApplication
   end
   
   def simpleUpdate(tpf)
+    @time_text.text = "PLAY TIME: #{(@counter += 1) / 1000}" if playing?
     cam_dir = cam.direction.clone.mult_local(0.6)
     cam_left = cam.left.clone.mult_local(0.4)
     @walk_direction.set(0, 0, 0)
@@ -243,16 +254,16 @@ class Maze < SimpleApplication
     @walk_direction.add_local(cam_dir.negate) if @down
     player.walk_direction = @walk_direction
     cam.location = player.physics_location
-    unless playing
-      self.playing = true
-      self.playtime = Time.now
-    end
-    if cam.location.x > (@floor[:width] - 10) && cam.location.z > (@floor[:height] - 10) && playing
+    if cam.location.x > (@floor[:width] - 10) && cam.location.z > (@floor[:height] - 10) && playing?
+      puts "finish"
       self.playing = false
-      puts "FINISH!"
       finish_time = Time.now - playtime
-      puts "COMPLETED IN: #{finish_time}"
+      @time_text.text = "FINISH TIME: #{finish_time.ceil} seconds"
     end
+  end
+  
+  def playing?
+    playing
   end
   
   class ControllerAction
@@ -275,8 +286,8 @@ class Maze < SimpleApplication
           pt = collision.contact_point
           spacial = collision.geometry
           hit = spacial.name
-          @parent.root_node.detach_child(spacial)
-          @parent.root_node.detach_child(@parent.mark)
+          #@parent.root_node.detach_child(spacial)
+          #@parent.root_node.detach_child(@parent.mark)
         end
         
         if results.size > 0
