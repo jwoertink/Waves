@@ -1,3 +1,8 @@
+=begin
+  This sample shows how an alpha channel can work with a PNG. You should see 2 cubes,
+  a sphere with a directional light, and a textured wall that's partially see-through
+=end
+
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.light.DirectionalLight"
 java_import "com.jme3.material.Material"

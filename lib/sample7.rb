@@ -1,3 +1,8 @@
+=begin
+  There are several blocks, and the golem. Press spacebar, or left mouse click to shoot them.
+  Watch the console to see which one was hit.
+=end
+  
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.collision.CollisionResult"
 java_import "com.jme3.collision.CollisionResults"

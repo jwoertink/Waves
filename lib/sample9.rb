@@ -1,3 +1,7 @@
+=begin
+  This sample creates a full landscape with hills, dirt trails, and rocks from 3 jpg images.
+=end
+
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.material.Material"
 java_import "com.jme3.terrain.geomipmap.TerrainLodControl"

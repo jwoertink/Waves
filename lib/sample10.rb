@@ -1,3 +1,8 @@
+=begin
+  This is the sound sample. You should hear ambient background noise.
+  Clicking left mouse button will cause a gunshot to fire.
+=end
+
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.audio.AudioNode"
 java_import "com.jme3.input.controls.ActionListener"

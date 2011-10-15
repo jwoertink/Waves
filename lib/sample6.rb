@@ -1,3 +1,8 @@
+=begin
+  This example takes a model and shows a walking animation. You sould see the Oto Golem.
+  Press spacebar to make him walk
+=end
+
 java_import "com.jme3.animation.AnimChannel"
 java_import "com.jme3.animation.AnimControl"
 java_import "com.jme3.animation.AnimEventListener"

@@ -1,3 +1,8 @@
+=begin
+  This is a full town scene. You can walk, and jump around on the buildings.
+  This sample also takes advantage of loading from a zip file.
+=end
+
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.asset.plugins.ZipLocator"
 java_import "com.jme3.bullet.BulletAppState"

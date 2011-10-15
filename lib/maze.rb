@@ -38,7 +38,7 @@ java_import "com.jme3.util.SkyFactory"
 class Maze < SimpleApplication
   include ActionListener
   
-  field_accessor :flyCam
+  field_accessor :flyCam, :paused
   field_reader :cam, :settings
   attr_accessor :playtime, :playing, :bullet_app_state, :player, :mark, :shootables, :gun_sound, :ambient_noise
   
@@ -205,11 +205,7 @@ class Maze < SimpleApplication
     input_manager.add_mapping("Up",    KeyTrigger.new(KeyInput::KEY_W))
     input_manager.add_mapping("Down",  KeyTrigger.new(KeyInput::KEY_S))
     input_manager.add_mapping("Shoot", KeyTrigger.new(KeyInput::KEY_SPACE), MouseButtonTrigger.new(MouseInput::BUTTON_LEFT))
-    input_manager.add_listener(ControllerAction.new(self), "Left")
-    input_manager.add_listener(ControllerAction.new(self), "Right")
-    input_manager.add_listener(ControllerAction.new(self), "Up")
-    input_manager.add_listener(ControllerAction.new(self), "Down")
-    input_manager.add_listener(ControllerAction.new(self), "Shoot")
+    input_manager.add_listener(ControllerAction.new(self), ["Left", "Right", "Up", "Down", "Shoot"].to_java(:string))
   end
   
   def setup_text!
@@ -223,6 +219,7 @@ class Maze < SimpleApplication
     
     @time_text = BitmapText.new(gui_font, false)
     @time_text.size = 20
+    @time_text.color = ColorRGBA::Blue
     @time_text.text = "PLAY TIME:"
     @time_text.set_local_translation(50, 50, 0)
     gui_node.attach_child(@time_text)
@@ -254,11 +251,13 @@ class Maze < SimpleApplication
     @walk_direction.add_local(cam_dir.negate) if @down
     player.walk_direction = @walk_direction
     cam.location = player.physics_location
-    if cam.location.x > (@floor[:width] - 10) && cam.location.z > (@floor[:height] - 10) && playing?
+    if cam.location.x > (@floor[:width]) && cam.location.z > (@floor[:height] - 20) && playing?
       puts "finish"
       self.playing = false
       finish_time = Time.now - playtime
+      # finish_time != (@counter / 1000)
       @time_text.text = "FINISH TIME: #{finish_time.ceil} seconds"
+      self.paused = true #This might lock up the game..
     end
   end
   
