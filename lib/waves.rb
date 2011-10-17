@@ -10,7 +10,7 @@ module Waves
   def self.start(file = "1")
     sample = "sample#{file}"
     begin
-      require sample
+      require "samples/#{sample}"
       Object.const_get(sample.capitalize).new.start
     rescue Exception => e
       warn "#{e}"
