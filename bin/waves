@@ -5,6 +5,10 @@ require 'rubygems'
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 require 'waves'
 
-sample = ARGV[0] || "1"
+if ARGV[0] == "samples"
+  Waves.samples.each { |s| Waves.echo(s, :cyan) }
+else
+  sample = ARGV[0] || "1"
+  Waves.start(sample)
+end
 
-Waves.start(sample)

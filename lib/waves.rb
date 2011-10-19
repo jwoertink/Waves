@@ -7,10 +7,23 @@ require File.join(PROJECT_ROOT, 'vendor', 'jme3_2011-08-29.jar')
 module Waves
   VERSION = "0.0.1"
   
+  COLORS = {
+    :black  => "\e[30m", 
+    :red    => "\e[31m", 
+    :green  => "\e[32m",
+    :yellow => "\e[33m",
+    :blue   => "\e[34m",
+    :magenta=> "\e[35m",
+    :cyan   => "\e[36m",
+    :white  => "\e[37m",
+    :reset  => "\e[0m"
+  }
+  
   def self.start(file = "1")
     sample = "sample#{file}"
     begin
       require "samples/#{sample}"
+      echo("Starting Sample #{file}", :green)
       Object.const_get(sample.capitalize).new.start
     rescue Exception => e
       warn "#{e}"
@@ -18,7 +31,11 @@ module Waves
   end
   
   def self.samples
-    @sample ||= Dir.glob(File.join(PROJECT_ROOT, 'lib', 'sample?.rb'))
+    @samples ||= Dir.glob(File.join(PROJECT_ROOT, 'lib', 'samples', "*.rb"))
+  end
+  
+  def self.echo(words, color = :white)
+    puts "#{COLORS[color]}#{words}#{COLORS[:reset]}"
   end
   
 end

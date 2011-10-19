@@ -1,9 +1,7 @@
 require 'rubygems'
 require 'bundler'
 Bundler.require
-require 'java'
-PROJECT_ROOT = File.expand_path('..', File.dirname(__FILE__))
-require File.join(PROJECT_ROOT, 'vendor', 'jme3_2011-08-29.jar')
+require File.join(Dir.pwd, 'lib', 'waves.rb')
 
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.system.AppSettings"
@@ -277,7 +275,7 @@ class Maze < SimpleApplication
         self.playing = false
         finish_time = Time.now - playtime
         # finish_time != (@counter / 1000)
-        # @targets.size > @targets_generated ....
+        # @targets.size == actual targets shot * 2 ....
         @time_text.text = "FINISH TIME: #{finish_time.ceil} seconds. You shot #{@targets.size}/#{@targets_generated} targets"
         self.paused = true #This might lock up the game..
         input_manager.cursor_visible = true
@@ -333,5 +331,5 @@ class Maze < SimpleApplication
   end
   
 end
-
+Waves.echo("Booting Maze Craze", :green)
 Maze.new.start
