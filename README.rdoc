@@ -14,7 +14,7 @@ Currently these are all samples from the jMonkeyEngine Hello tutorials re-writte
   bundle
 
 You should be good at this point.
-== Running
+== Running Waves
 The main application can be run by
   jruby bin/waves
   
@@ -23,6 +23,9 @@ You can view other samples by passing the sample number as an argument
   
 Normal camera operations use W A S D to move. To exit just hit esc.
 
+== Running Maze Craze
+  jruby lib/maze.rb
+  
 == Requirements
   OSX (Because I haven't tried this on anything else)
   JRuby 1.6+
