@@ -60,6 +60,8 @@ class Maze < SimpleApplication
     self.settings = config
     @time_text = nil
     @counter = 0
+    @targets = []
+    @targets_generated = 0
     Logger.get_logger("").level = Level::WARNING
   end
   
@@ -73,6 +75,7 @@ class Maze < SimpleApplication
     player.fall_speed = 30
     player.gravity = 30
     player.physics_location = Vector3f.new(-185, 15, -95)
+    # This isn't being used yet.
     player_model = asset_manager.load_model(File.join("Models", "Oto", "Oto.mesh.xml"))
     player_model.local_scale = 0.5
     player_model.local_translation = Vector3f.new(-185, 15, -95)
@@ -94,13 +97,13 @@ class Maze < SimpleApplication
     setup_light!
     setup_audio!
     
-    generate_dynamic_maze
+    generate_maze
 
     self.playing = true
     self.playtime = Time.now
   end
   
-  def generate_static_maze
+  def static_maze
     maze = 
     <<-MAZE
     _____________________
@@ -117,16 +120,14 @@ class Maze < SimpleApplication
     MAZE
   end
   
-  def generate_dynamic_maze
+  def generate_maze(maze = nil)
     maze = Theseus::OrthogonalMaze.generate(:width => 10)
     rows = maze.to_s.split("\n")
     starting_left = -(@floor[:width] - @wall[:width])
     us_start = -@floor[:height]
     pipe_start = us_start - @wall[:width]
-    #Start wall
-    create_wall(starting_left, 10, pipe_start + 20, 0, 10, 10, "start.jpg")
-    #End wall
-    create_wall(@floor[:width] + 10, 0, @floor[:height] - 10, 10, 0, 10, "stop.jpg")
+    create_wall(starting_left, 10, pipe_start + 20, 0, 10, 10, {:image => "start.jpg"}) #Start wall
+    create_wall(@floor[:width] + 10, 0, @floor[:height] - 10, 10, 0, 10, {:image => "stop.jpg"}) #End wall
     rows.each_with_index do |step, row|
       step.split(//).each_with_index do |type, col|
         move_right = starting_left + (col * 20) # May need that 20 to be dynamic....
@@ -139,7 +140,11 @@ class Maze < SimpleApplication
           create_wall(move_right, @wall[:height], pipe_move_down, @wall[:width], @wall[:height], 10)
         when " "
           # This is a space
-          # Randomly generate a golem
+          # Randomly generate a target
+          if row > 0 && col > 11 && rand(100) > 90
+            create_wall(move_right, @wall[:height], us_move_down, @wall[:width], @wall[:height], 0, {:image => "target.png", :name => "Target"})
+            @targets_generated += 1
+          end
         end
       end
     end
@@ -154,16 +159,6 @@ class Maze < SimpleApplication
   end
   
   def setup_floor!
-    # box = Box.new(Vector3f.new(0, 0, 0), @floor[:width], 0.2, @floor[:height])
-    # floor = Geometry.new("the Floor", box)
-    # matl = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
-    # matl.set_texture("ColorMap", asset_manager.load_texture(File.join('assets', 'Textures', 'hardwood.jpg')))
-    # floor.material = matl    
-    # scene_shape = CollisionShapeFactory.create_mesh_shape(floor)
-    # landscape = RigidBodyControl.new(scene_shape, 0)
-    # floor.add_control(landscape)
-    # bullet_app_state.physics_space.add(landscape)
-    # root_node.attach_child(floor)
     floor = Box.new(Vector3f::ZERO, @floor[:width], 0.2, @floor[:height])
     floor.scale_texture_coordinates(Vector2f.new(3, 6))
     floor_mat = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
@@ -197,9 +192,11 @@ class Maze < SimpleApplication
   #  bx = x width
   #  by = height
   #  bz = y width
-  def create_wall(vx, vy, vz, bx, by, bz, image = 'brickwall.jpg')
+  def create_wall(vx, vy, vz, bx, by, bz, options = {})
+    image = options[:image] || 'brickwall.jpg'
+    name = options[:name] || "a Wall"
     box = Box.new(Vector3f.new(vx, vy, vz), bx, by, bz)
-    wall = Geometry.new("a Wall", box)
+    wall = Geometry.new(name, box)
     matl = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
     matl.set_texture("ColorMap", asset_manager.load_texture(File.join('assets', 'Textures', image)))
     wall.material = matl
@@ -249,14 +246,14 @@ class Maze < SimpleApplication
   def setup_audio!
     self.gun_sound = AudioNode.new(asset_manager, File.join("Sound", "Effects", "Gun.wav"), false)
     gun_sound.looping = false
-    gun_sound.volume = 2
+    gun_sound.volume = 3
     root_node.attach_child(gun_sound)
     
     self.ambient_noise = AudioNode.new(asset_manager, File.join("Sound", "Environment", "Nature.ogg"), false)
     ambient_noise.looping = true
     ambient_noise.positional = true
     ambient_noise.local_translation = Vector3f::ZERO.clone
-    ambient_noise.volume = 3
+    ambient_noise.volume = 2
     root_node.attach_child(ambient_noise)
     ambient_noise.play
   end
@@ -273,14 +270,20 @@ class Maze < SimpleApplication
     player.walk_direction = @walk_direction
     cam.location = player.physics_location
     if cam.location.x > (@floor[:width]) && cam.location.z > (@floor[:height] - 20) && playing?
-      puts "finish"
-      self.playing = false
-      finish_time = Time.now - playtime
-      # finish_time != (@counter / 1000)
-      @time_text.text = "FINISH TIME: #{finish_time.ceil} seconds"
-      self.paused = true #This might lock up the game..
-      input_manager.cursor_visible = true
-      # use nifty
+      if @targets.empty? && @targets_generated > 0
+        @time_text.text = "YOU MUST SHOOT A TARGET FIRST!"
+      else
+        puts "finish"
+        self.playing = false
+        finish_time = Time.now - playtime
+        # finish_time != (@counter / 1000)
+        # @targets.size > @targets_generated ....
+        @time_text.text = "FINISH TIME: #{finish_time.ceil} seconds. You shot #{@targets.size}/#{@targets_generated} targets"
+        self.paused = true #This might lock up the game..
+        input_manager.cursor_visible = true
+        flyCam.enabled = false
+        # use nifty
+      end
       
     end
   end
@@ -309,10 +312,14 @@ class Maze < SimpleApplication
           pt = collision.contact_point
           spacial = collision.geometry
           hit = spacial.name
-          #@parent.root_node.detach_child(spacial)
-          #@parent.root_node.detach_child(@parent.mark)
+          if hit.eql?("Target")
+            @parent.instance_variable_get("@targets") << spacial
+            spacial.remove_from_parent
+            @parent.bullet_app_state.physics_space.remove(spacial.get_control(RigidBodyControl.java_class))
+            @parent.root_node.detach_child(@parent.mark)
+          end
         end
-        
+        #Remove bullet mark after target is destroyed
         if results.size > 0
           closest = results.closest_collision
           @parent.mark.local_translation = closest.contact_point
@@ -327,5 +334,4 @@ class Maze < SimpleApplication
   
 end
 
-@app = Maze.new
-@app.start
+Maze.new.start
