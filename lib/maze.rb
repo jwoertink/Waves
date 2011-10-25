@@ -277,7 +277,7 @@ class Maze < SimpleApplication
         # finish_time != (@counter / 1000)
         # @targets.size == actual targets shot * 2 ....
         @time_text.text = "FINISH TIME: #{finish_time.ceil} seconds. You shot #{@targets.size}/#{@targets_generated} targets"
-        self.paused = true #This might lock up the game..
+        self.paused = true
         input_manager.cursor_visible = true
         flyCam.enabled = false
         # use nifty
