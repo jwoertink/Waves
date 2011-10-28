@@ -1,8 +1,11 @@
 require 'java'
+require 'jruby/core_ext'
 
 PROJECT_ROOT = File.expand_path('..', File.dirname(__FILE__))
 
-require File.join(PROJECT_ROOT, 'vendor', 'jme3_2011-08-29.jar')
+$: << File.join(PROJECT_ROOT, "lib")
+
+require File.join("..", 'vendor', 'jme3_2011-10-25.jar')
 
 module Waves
   VERSION = "0.0.1"
