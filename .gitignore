@@ -9,3 +9,4 @@ pkg
 tmtags
 Gemfile.lock
 *.gemspec
+assets/Interface/*.xml

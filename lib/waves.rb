@@ -2,6 +2,7 @@ require 'java'
 require 'jruby/core_ext'
 
 PROJECT_ROOT = File.expand_path('..', File.dirname(__FILE__))
+$CLASSPATH << File.join(PROJECT_ROOT, "package", "classes", "java")
 
 $: << File.join(PROJECT_ROOT, "lib")
 

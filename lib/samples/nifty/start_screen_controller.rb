@@ -5,6 +5,7 @@ java_import "com.jme3.app.state.AppStateManager"
 java_import "de.lessvoid.nifty.Nifty"
 java_import "de.lessvoid.nifty.screen.Screen"
 java_import "de.lessvoid.nifty.screen.ScreenController"
+java_import "de.lessvoid.nifty.screen.DefaultScreenController"
 
 class StartScreenController < AbstractAppState
   include ScreenController
@@ -15,12 +16,12 @@ class StartScreenController < AbstractAppState
   
   attr_accessor :nifty, :screen, :app
   
-  def initialize
+  def initialize(data = "")
   end
   
   def init_with(data = {})
-    #init = java_method(:initialize, [com.jme3.app.state.AppStateManager, com.jme3.app.SimpleApplication])
-    #init.call(data[:state_manager], data[:app])
+    # init = java_method(:initialize, [com.jme3.app.state.AppStateManager, com.jme3.app.SimpleApplication])
+    # init.call(data[:state_manager], data[:app])
     @state_manager = data[:state_manager]
     self.app = data[:app]
     self.initialized = true

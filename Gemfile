@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 
 gem 'theseus', :git => "git://github.com/jwoertink/theseus.git"
+gem "rawr"
 
 group :development do
   gem "rspec", "~> 2.3.0"

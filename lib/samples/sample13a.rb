@@ -1,5 +1,5 @@
 =begin
-  Sample using Nifty the "JRuby" way.
+  Sample using Nifty the "JRuby" way. This sample doesn't work :(
 =end
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.niftygui.NiftyJmeDisplay"
@@ -9,7 +9,7 @@ java_import "de.lessvoid.nifty.builder.LayerBuilder"
 java_import "de.lessvoid.nifty.builder.PanelBuilder"
 java_import "de.lessvoid.nifty.controls.button.builder.ButtonBuilder"
 #java_import "de.lessvoid.nifty.screen.DefaultScreenController"
-require "#{PROJECT_ROOT}/lib/samples/nifty/start_screen_controller"
+require "samples/nifty/start_screen_controller"
 
 class Sample13a < SimpleApplication
  field_accessor :flyCam
@@ -22,16 +22,16 @@ class Sample13a < SimpleApplication
  
     nifty.loadStyleFile("nifty-default-styles.xml")
     nifty.loadControlFile("nifty-default-controls.xml")
-    
+    StartScreenController.become_java!
     screen_builder = MyScreenBuilder.new("Hello Nifty Screen")
     controller = StartScreenController.new
     controller.init_with({:state_manager => state_manager, :app => self})
-    screen_builder.controller(controller)
+    screen_builder.controller(controller.get_class.name)
     screen_builder.layer(MyLayerBuilder.new("Layer_ID"))
     
     nifty.addScreen("Screen_ID", screen_builder.build(nifty))
     nifty.gotoScreen("Screen_ID")
-  end
+  end  
 end
 
 class MyScreenBuilder < ScreenBuilder
@@ -43,6 +43,7 @@ class MyLayerBuilder < LayerBuilder
   def initialize(id)
     super
     childLayoutVertical
+    backgroundColor("#FF0000")
     panel(MyPanelBuilder.new("Panel_ID"))
   end
   
@@ -66,8 +67,8 @@ class MyButtonBuilder < ButtonBuilder
     valignCenter
     height("5%")
     width("15%")
-    visibleToMouse(true)
-    interactOnClick("quitGame")
+    visibleToMouse
+    interactOnClick("quitGame()")
   end
   
 end

@@ -1,5 +1,4 @@
 = waves
-
 This is just some JRuby(http://jruby.org/) and jMonkeyEngine(http://jmonkeyengine.com/) fun.
 Currently these are all samples from the jMonkeyEngine Hello tutorials re-written in JRuby. There are a few small modifications.
 
@@ -33,6 +32,12 @@ Normal camera operations use W A S D to move. To exit just hit esc.
 
 == jMonkeyEngine
 http://jmonkeyengine.org/wiki/doku.php/jme3:beginner:hello_simpleapplication
+
+== Other Notes
+The Nifty-gui must be implemented in Java (for now) to work. This requires taking the lib/samples/nifty/StartScreenController.java and compiling it into the package/classes/java/StartScreenController.class file. If this file is missing, then to compile, run
+  javac -classpath vendor/jme3_2011-10-25.jar  lib/samples/nifty/StartScreenController.java
+  mv lib/samples/nifty/StartScreenController.class package/classes/java
+  
 
 == Contributing to waves
  
