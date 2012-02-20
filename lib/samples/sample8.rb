@@ -56,7 +56,8 @@ class Sample8 < SimpleApplication
     root_node.attach_child(scene_model)
     bullet_app_state.physics_space.add(landscape)
     bullet_app_state.physics_space.add(player)
-    bullet_app_state.physics_space.enable_debug(asset_manager)
+    # Enable Debugging
+    #bullet_app_state.physics_space.enable_debug(asset_manager)
     setup_keys!
     setup_light!
   end

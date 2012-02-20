@@ -6,7 +6,7 @@ $CLASSPATH << File.join(PROJECT_ROOT, "package", "classes", "java")
 
 $: << File.join(PROJECT_ROOT, "lib")
 
-require File.join("..", 'vendor', 'jme3_2011-10-25.jar')
+require File.join("..", 'vendor', 'jme3_2011-11-13.jar')
 
 module Waves
   VERSION = "0.0.1"

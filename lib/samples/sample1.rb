@@ -11,10 +11,13 @@ java_import "com.jme3.scene.Geometry"
 java_import "com.jme3.scene.shape.Box"
 java_import "com.jme3.math.ColorRGBA"
 java_import "com.jme3.scene.Node"
+java_import "com.jme3.system.NanoTimer"
 
 class Sample1 < SimpleApplication
   
   def simpleInitApp
+    self.timer = NanoTimer.new #required for patch
+    
     box1 = Box.new(Vector3f.new(1,-1,1), 1, 1, 1)
     blue = Geometry.new("Box", box1)
     material1 = Material.new(self.asset_manager, File.join('Common', 'MatDefs', 'Misc', 'Unshaded.j3md'))

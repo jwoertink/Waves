@@ -47,10 +47,10 @@ class Sample4 < SimpleApplication
     fire.images_y = 2
     fire.end_color = ColorRGBA.new(1.0, 0.0, 0.0, 1.0)
     fire.start_color = ColorRGBA.new(1.0, 1.0, 0.0, 0.5)
-    fire.initial_velocity = Vector3f.new(0, 2, 0)
+    fire.particle_influencer.initial_velocity = Vector3f.new(0, 2, 0)
     fire.start_size = 0.6
     fire.end_size = 0.1
-    fire.gravity = 0
+    fire.set_gravity(0, 0, 0)
     fire.low_life = 0.5
     fire.high_life = 3.0
     fire.velocity_variation = 0.3
