@@ -1,15 +1,15 @@
-require 'rubygems'
-require 'java'
-require 'jruby/core_ext'
+# require 'rubygems'
+# require 'java'
+# require 'jruby/core_ext'
 require 'bundler'
 Bundler.require
 
-GAME_ROOT_PATH = File.expand_path(File.dirname(__FILE__))
-$CLASSPATH << File.join(GAME_ROOT_PATH, "java", "classes")
+# GAME_ROOT_PATH = File.expand_path(File.dirname(__FILE__))
+# $CLASSPATH << File.join(GAME_ROOT_PATH, "java", "classes")
+# 
+# $: << File.join(GAME_ROOT_PATH)
 
-$: << File.join(GAME_ROOT_PATH)
-
-require File.join(GAME_ROOT_PATH, '..', '..', 'vendor', 'jme3_2011-11-13.jar')
+#require File.join(GAME_ROOT_PATH, '..', '..', 'vendor', 'jme3_2012-12-20.jar')
 
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.system.AppSettings"
@@ -46,15 +46,15 @@ java_import "com.jme3.util.SkyFactory"
 java_import "com.jme3.texture.Texture"
 java_import "com.jme3.material.RenderState"
 java_import "com.jme3.niftygui.NiftyJmeDisplay"
-java_import "de.lessvoid.nifty.Nifty"
-java_import "de.lessvoid.nifty.screen.Screen"
-java_import "de.lessvoid.nifty.screen.ScreenController"
+# java_import "de.lessvoid.nifty.Nifty"
+# java_import "de.lessvoid.nifty.screen.Screen"
+# java_import "de.lessvoid.nifty.screen.ScreenController"
 java_import "java.util.logging.Level"
 java_import "java.util.logging.Logger"
 
-java_import "java.awt.DisplayMode"
-java_import "java.awt.GraphicsDevice"
-java_import "java.awt.GraphicsEnvironment"
+# java_import "java.awt.DisplayMode"
+# java_import "java.awt.GraphicsDevice"
+# java_import "java.awt.GraphicsEnvironment"
 
 java_import "StartScreenController"
 # java_import "HudScreenController"

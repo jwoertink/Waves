@@ -43,9 +43,10 @@ public class StartScreenController extends AbstractAppState implements ScreenCon
   }
   
   public void startGame(String nextScreen) {
-    System.out.println("\n\n startGame called\n\n");
     nifty.gotoScreen(nextScreen);  // switch to another screen
     // start the game and do some more stuff...
+    // app.setupgame(); // Need to run this method, but it doesn't exist here.
+    System.out.println("\n\n setting up game\n\n");
   }
 
   public void quitGame() {

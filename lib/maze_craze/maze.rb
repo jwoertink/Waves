@@ -31,62 +31,64 @@ class Maze < SimpleApplication
   
   def simpleInitApp
     self.timer = NanoTimer.new
-    if @game_state.zero?
-      display_start_screen
-    else
-      self.bullet_app_state = BulletAppState.new
-      state_manager.attach(bullet_app_state)
-    
-      capsule_shape = CapsuleCollisionShape.new(1.5, 15.0, 1)
-      self.player = CharacterControl.new(capsule_shape, 0.05)
-      player.jump_speed = 20
-      player.fall_speed = 30
-      player.gravity = 30
-      player.physics_location = Vector3f.new(-185, 15, -95)
-      # This isn't being used yet.
-      player_model = asset_manager.load_model(File.join("Models", "Oto", "Oto.mesh.xml"))
-      player_model.local_scale = 0.5
-      player_model.local_translation = Vector3f.new(-185, 15, -95)
-      player_model.add_control(player)
-      bullet_app_state.physics_space.add(player_model)
-    
-    
-      sphere = Sphere.new(30, 30, 0.2)
-      self.mark = Geometry.new("BOOM!", sphere)
-      mark_mat = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
-      mark_mat.set_color("Color", ColorRGBA::Red)
-      mark.material = mark_mat
-    
-      setup_text!
-      setup_camera!
-      setup_floor!
-      setup_sky!
-      setup_keys!
-      setup_light!
-      setup_audio!
-    
-      generate_maze #(static_maze)
-
-      self.playing = true
-      self.playtime = Time.now
-    end
+    display_start_screen
   end
   
   def display_start_screen
     nifty_display = NiftyJmeDisplay.new(asset_manager, input_manager, audio_renderer, gui_view_port)
     nifty = nifty_display.nifty
-    nifty.from_xml(File.join('lib', 'maze_craze', 'views', 'screen.xml'), 'start', self)
+    controller = StartScreenController.new(self)
+    nifty.from_xml(File.join('lib', 'maze_craze', 'views', 'screen.xml'), 'start', controller)
     gui_view_port.add_processor(nifty_display)
-    # fly_cam.enabled = false
-    # fly_cam.drag_to_rotate = true
+    flyCam.enabled = false
+    flyCam.drag_to_rotate = true
     input_manager.cursor_visible = true
-    #controller = StartScreenController.new(self)
+    
     # device = GraphicsEnvironment.local_graphics_environment.default_screen_device
     # modes = device.display_modes
     # modes.each do |mode|
     #   puts "#{mode.width}x#{mode.height} #{mode.bit_depth}bit"
     # end
     # self.stop
+  end
+  
+  def setupgame
+    @game_state = 1
+    self.bullet_app_state = BulletAppState.new
+    state_manager.attach(bullet_app_state)
+  
+    capsule_shape = CapsuleCollisionShape.new(1.5, 15.0, 1)
+    self.player = CharacterControl.new(capsule_shape, 0.05)
+    player.jump_speed = 20
+    player.fall_speed = 30
+    player.gravity = 30
+    player.physics_location = Vector3f.new(-185, 15, -95)
+    # This isn't being used yet.
+    player_model = asset_manager.load_model(File.join("Models", "Oto", "Oto.mesh.xml"))
+    player_model.local_scale = 0.5
+    player_model.local_translation = Vector3f.new(-185, 15, -95)
+    player_model.add_control(player)
+    bullet_app_state.physics_space.add(player_model)
+  
+  
+    sphere = Sphere.new(30, 30, 0.2)
+    self.mark = Geometry.new("BOOM!", sphere)
+    mark_mat = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
+    mark_mat.set_color("Color", ColorRGBA::Red)
+    mark.material = mark_mat
+  
+    setup_text!
+    setup_camera!
+    setup_floor!
+    setup_sky!
+    setup_keys!
+    setup_light!
+    setup_audio!
+  
+    generate_maze #(static_maze)
+
+    self.playing = true
+    self.playtime = Time.now
   end
   
   def static_maze
@@ -140,6 +142,7 @@ MAZE
   
   
   def setup_camera!
+    flyCam.enabled = true
     flyCam.move_speed = 100
     cam.look_at_direction(Vector3f.new(10, 0, 0).normalize_local, Vector3f::UNIT_Y)
   end
