@@ -31,7 +31,8 @@ class Maze < SimpleApplication
   
   def simpleInitApp
     self.timer = NanoTimer.new
-    display_start_screen
+    #display_start_screen
+    setupgame
   end
   
   def display_start_screen
