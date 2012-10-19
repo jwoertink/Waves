@@ -1,14 +1,12 @@
 = waves
-This is just some JRuby(http://jruby.org/) and jMonkeyEngine(http://jmonkeyengine.com/) fun.
+This is just some JRuby(http://jruby.org/) and jMonkeyEngine(http://jmonkeyengine.org/) fun.
 Currently these are all samples from the jMonkeyEngine Hello tutorials re-written in JRuby. There are a few small modifications.
 
 == Installation
 (rvm not required, but it's awesome)
-  rvm install jruby
+  rvm install jruby-head
   git clone git://github.com/jwoertink/Waves.git
   cd Waves
-  rvm gemset create @waves
-  rvm use @waves
   gem install bundler
   bundle
 
@@ -23,7 +21,7 @@ You can view other samples by passing the sample number as an argument
 Normal camera operations use W A S D to move. To exit just hit esc.
 
 == Running Maze Craze
-  jruby lib/maze.rb
+  jruby lib/maze_craze
   
 == Requirements
   OSX (Because I haven't tried this on anything else)
@@ -35,9 +33,17 @@ http://jmonkeyengine.org/wiki/doku.php/jme3:beginner:hello_simpleapplication
 
 == Other Notes
 The Nifty-gui must be implemented in Java (for now) to work. This requires taking the lib/samples/nifty/StartScreenController.java and compiling it into the package/classes/java/StartScreenController.class file. If this file is missing, then to compile, run
-  javac -classpath vendor/jme3_2011-10-25.jar  lib/samples/nifty/StartScreenController.java
+  javac -classpath vendor/jme3_2012-10-19.jar  lib/samples/nifty/StartScreenController.java
   mv lib/samples/nifty/StartScreenController.class package/classes/java
-  
+
+== Current (known) Issues
+* MazeCraze runs smooth for the first 15 seconds, then gets really "jumpy"
+* Not tested in any other OS
+* MazeCraze maze is limited to size 10. Floor isn't dynamic enough to change sizes of maze
+* Nifty/JRuby example (sample 13a) throws nasty exception
+* Rag-doll sample loads, but isn't useable
+* Sample 8 renders green in JRuby, but normal in Java
+
 
 == Contributing to waves
  
@@ -51,6 +57,6 @@ The Nifty-gui must be implemented in Java (for now) to work. This requires takin
 
 == Copyright
 
-Copyright (c) 2011 Jeremy Woertink. See LICENSE.txt for
+Copyright (c) 2012 Jeremy Woertink. See LICENSE.txt for
 further details.
 
