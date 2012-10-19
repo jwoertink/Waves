@@ -1,1 +1,1 @@
-rvm use jruby-1.6.6@waves
+rvm use jruby-head@waves --create

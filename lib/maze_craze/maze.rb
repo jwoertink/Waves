@@ -31,7 +31,7 @@ class Maze < SimpleApplication
   
   def simpleInitApp
     self.timer = NanoTimer.new
-    #display_start_screen
+    display_start_screen
     setupgame
   end
   
@@ -86,7 +86,7 @@ class Maze < SimpleApplication
     setup_light!
     setup_audio!
   
-    generate_maze #(static_maze)
+    generate_maze(:width => 5) #(static_maze)
 
     self.playing = true
     self.playtime = Time.now
@@ -109,8 +109,9 @@ _____________________
 MAZE
   end
   
-  def generate_maze(maze = nil)
-    maze = maze || Theseus::OrthogonalMaze.generate(:width => 10)
+  def generate_maze(opts = {})
+    maze_width = opts[:width] || 10
+    maze = opts[:maze] || Theseus::OrthogonalMaze.generate(:width => maze_width)
     rows = maze.to_s.split("\n")
     starting_left = -(@floor[:width] - @wall[:width])
     us_start = -@floor[:height]
