@@ -80,7 +80,7 @@ class Sample8 < SimpleApplication
     al.color = ColorRGBA::White.mult(1.3)
     root_node.add_light(al)
     dl = DirectionalLight.new
-    dl.color = ColorRGBA.new(0.75, 1.0, 0.0, 1.0)
+    dl.color = ColorRGBA::White
     dl.direction = Vector3f.new(2.8, -2.8, -2.8).normalize_local
     root_node.add_light(dl)
   end

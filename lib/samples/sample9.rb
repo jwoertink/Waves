@@ -1,5 +1,6 @@
 =begin
   This sample creates a full landscape with hills, dirt trails, and rocks from 3 jpg images.
+  TODO: this isn't loading for some reason.
 =end
 
 java_import "com.jme3.app.SimpleApplication"
