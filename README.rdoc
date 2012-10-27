@@ -37,7 +37,6 @@ The Nifty-gui must be implemented in Java (for now) to work. This requires takin
 * Not tested in any other OS
 * Nifty/JRuby example (sample 13a) throws nasty exception
 * Rag-doll sample loads, but isn't useable
-* Sample 9 isn't working
 * Sample 16 isn't working
 
 == Contributing to waves

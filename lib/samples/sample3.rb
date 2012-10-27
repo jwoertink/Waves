@@ -1,5 +1,5 @@
 =begin
-  This sample takes 2 boxes, and makes them rotate at different speeds
+  This sample takes 2 boxes, and makes them rotate at different speeds.
   You can use 'W' 'A' 'S' 'D' to move around. 'Q' and 'Z' allow you to move up and down.
 =end
 

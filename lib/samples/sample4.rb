@@ -1,10 +1,12 @@
 =begin
   This shows a normal blue box with fire coming out of the top. The camera can be moved like normal,
-  but in this sample, the box can be moved left with "J" and right with "K" and rotated with space.
+  but in this sample, the box can be moved left with "J" and right with "K" and rotated with space. 
+  It also shows an example of a custom load screen by editing the settings.
 =end
 
 
 java_import "com.jme3.app.SimpleApplication"
+java_import "com.jme3.system.AppSettings"
 java_import "com.jme3.material.Material"
 java_import "com.jme3.math.Vector3f"
 java_import "com.jme3.scene.Geometry"
@@ -20,16 +22,21 @@ java_import "com.jme3.effect.ParticleEmitter"
 java_import "com.jme3.effect.ParticleMesh"
 
 class Sample4 < SimpleApplication
-  field_accessor :speed
-  field_accessor :paused
+  field_accessor :speed, :paused
+  field_reader :settings
   
   class << self
     attr_accessor :running
   end
   
   def initialize
-    $player = nil # I'm ashamed of this.... 
+    super #must call super for the settings to run. it's a JRuby thing
+    $player = nil # Use a global player object so it's accessible to the ControllerAnalog
     self.class.running = true
+    config = AppSettings.new(true)
+    config.settings_dialog_image = File.join("assets", "Interface", "maze_craze_logo.png")
+    self.settings = config
+    self.show_settings = true
   end
   
   def simpleInitApp
