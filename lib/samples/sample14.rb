@@ -1,5 +1,5 @@
 =begin
-  This is a Ragdoll Sample
+  This is a basic Ragdoll Sample
   The ragdoll currently shakes in rapid convultions. Not sure why yet.
 =end
 java_import "com.jme3.app.SimpleApplication"
@@ -25,13 +25,17 @@ class Sample14 < SimpleApplication
   include ActionListener
   field_reader :cam, :settings
   field_accessor :flyCam
-  attr_accessor :bullet_app_state, :shoulders, :upforce, :applyforce, :rag_doll
+  attr_accessor :bullet_app_state, :upforce, :applyforce, :rag_doll, :shoulders
   
-  def simpleInitApp
+  def initialize
+    self.bullet_app_state = BulletAppState.new
+    self.rag_doll = Node.new
     self.upforce = Vector3f.new(0, 200, 0)
     self.applyforce = false
-    self.rag_doll = Node.new
-    self.bullet_app_state = BulletAppState.new
+  end
+  
+  def simpleInitApp
+    flyCam.move_speed = 30
     state_manager.attach(bullet_app_state)
     bullet_app_state.physics_space.enable_debug(asset_manager)
     input_manager.add_mapping("Pull ragdoll up", MouseButtonTrigger.new(MouseInput::BUTTON_LEFT))
@@ -59,17 +63,19 @@ class Sample14 < SimpleApplication
   end
   
   def create_rag_doll
-    self.shoulders = create_limb(0.2, 1.0, Vector3f.new(0.00, 1.5, 0), true)
+    head = create_limb(0.2, 0.5, Vector3f.new(0.0, 2.5, 0), false)
+    self.shoulders = create_limb(0.2, 2.0, Vector3f.new(0.0, 1.5, 0), true)
     uArmL = create_limb(0.2, 0.5, Vector3f.new(-0.75, 0.8, 0), false)
     uArmR = create_limb(0.2, 0.5, Vector3f.new( 0.75, 0.8, 0), false)
     lArmL = create_limb(0.2, 0.5, Vector3f.new(-0.75,-0.2, 0), false)
     lArmR = create_limb(0.2, 0.5, Vector3f.new( 0.75,-0.2, 0), false)
-    body = create_limb(0.2, 1.0, Vector3f.new( 0.00, 0.5, 0), false)
-    hips = create_limb(0.2, 0.5, Vector3f.new( 0.00,-0.5, 0), true)
+    body = create_limb(0.2, 1.5, Vector3f.new( 0.0, 0.5, 0), false)
+    hips = create_limb(0.2, 0.5, Vector3f.new( 0.0,-0.5, 0), true)
     uLegL = create_limb(0.2, 0.5, Vector3f.new(-0.25,-1.2, 0), false)
     uLegR = create_limb(0.2, 0.5, Vector3f.new( 0.25,-1.2, 0), false)
     lLegL = create_limb(0.2, 0.5, Vector3f.new(-0.25,-2.2, 0), false)
     lLegR = create_limb(0.2, 0.5, Vector3f.new( 0.25,-2.2, 0), false)
+    join(shoulders,  head, Vector3f.new( 0.00,  1.8, 0))
     join(body,  shoulders, Vector3f.new( 0.00,  1.4, 0))
     join(body,       hips, Vector3f.new( 0.00, -0.5, 0))
     join(uArmL, shoulders, Vector3f.new(-0.75,  1.4, 0))
@@ -80,6 +86,7 @@ class Sample14 < SimpleApplication
     join(uLegR,      hips, Vector3f.new( 0.25, -0.5, 0))
     join(uLegL,     lLegL, Vector3f.new(-0.25, -1.7, 0))
     join(uLegR,     lLegR, Vector3f.new( 0.25, -1.7, 0))
+    rag_doll.attach_child(head)
     rag_doll.attach_child(shoulders)
     rag_doll.attach_child(body)
     rag_doll.attach_child(hips)
@@ -117,6 +124,7 @@ class Sample14 < SimpleApplication
   
   def simpleUpdate(tpf)
     if applyforce
+      Waves.echo("APPLYING FORCE!", :yellow)
       shoulders.get_control(RigidBodyControl.java_class).apply_force(upforce, Vector3f::ZERO) 
     end
   end
