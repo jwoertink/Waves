@@ -7,7 +7,11 @@ end
 #java_import "com.jme3.animation.*"
 java_import "com.jme3.app.SimpleApplication"
 java_import "com.jme3.asset.TextureKey"
+java_import "com.jme3.scene.shape.Box"
+java_import "com.jme3.animation.AnimControl"
+java_import "com.jme3.animation.AnimChannel"
 java_import "com.jme3.bullet.BulletAppState"
+java_import "com.jme3.light.AmbientLight"
 java_import "com.jme3.bullet.PhysicsSpace"
 java_import "com.jme3.bullet.collision.PhysicsCollisionEvent"
 java_import "com.jme3.bullet.collision.PhysicsCollisionObject"
@@ -41,17 +45,17 @@ class Sample14a < SimpleApplication
   field_reader :cam, :settings
   field_accessor :flyCam
   
-  attr_accessor :bullet_app_state, :mat_bullet, :model, :ragdoll, :bullet_size, :mat, :mat2, :bullet, :bullet_collision_shape, :anim_channel
+  attr_accessor :bullet_app_state, :mat_bullet, :model, :ragdoll, :bullet_size, :mat, :mat2, :bullet, :bullet_collision_shape, :anim_channel, 
+  # Not sure about these...
+  :elTime, :forward, :direction, :rotate, :dance
   
   def initialize
     self.bullet_size = 1.0
-    # float elTime = 0;
-    # boolean forward = true;
-    # AnimControl animControl;
-    # AnimChannel animChannel;
-    # Vector3f direction = new Vector3f(0, 0, 1);
-    # Quaternion rotate = new Quaternion().fromAngleAxis(FastMath.PI / 8, Vector3f.UNIT_Y);
-    # boolean dance = true;
+    self.elTime = 0
+    self.forward = true
+    self.direction = Vector3f.new(0, 0, 1)
+    self.rotate = Quaternion.new.fromAngleAxis(FastMath::PI / 8, Vector3f::UNIT_Y)
+    self.dance = true
   end
   
   def simpleInitApp
@@ -122,14 +126,28 @@ class Sample14a < SimpleApplication
   
   def init_material
     self.mat_bullet = Material.new(asset_manager, "Common/MatDefs/Misc/Unshaded.j3md")
-    key2 = TextureKey.new("Common/MatDefs/Misc/Unshaded.j3md")
+    key2 = TextureKey.new("Textures/Terrain/Rock/Rock.PNG")
     key2.generate_mips = true
     tex2 = asset_manager.load_texture(key2)
-    mat_bullet.set_texture("ColorMap", text2)
+    mat_bullet.set_texture("ColorMap", tex2)
   end
   
   def init_world
+    light = AmbientLight.new
+    light.color = ColorRGBA::LightGray
+    root_node.add_light(light)
     
+    material = Material.new(asset_manager, File.join("Common", "MatDefs", "Misc", "Unshaded.j3md"))
+    material.set_texture("ColorMap", asset_manager.load_texture(File.join("Interface", "Logo", "Monkey.jpg")))
+    
+    box = Box.new(Vector3f.new(0, -5, -5), 100, 0.2, 100)
+    floor = Geometry.new("the Floor", box)
+    floor.material = material
+    floor.set_local_translation(0, -0.1, 0)
+    floor_phy = RigidBodyControl.new(0.0)
+    floor.add_control(floor_phy)
+    root_node.attach_child(floor)
+    bullet_app_state.physics_space.add(floor)
   end
   
   def setup_light
@@ -161,11 +179,27 @@ class Sample14a < SimpleApplication
     sinbad.add_bone_name("Clavicle.R")
   end
   
-  def on_anim_cycle_done(control, channel, anim_name)
+  def collide(bone, obj, event)
+    if obj.user_object != nil && obj.user_object.is_a?(Geometry)
+      geom = obj.user_object
+      return if geom.name.eql?("Floor")
+    end
+    ragdoll.set_ragdoll_mode
+  end
+  
+  # This method must be defined, but doesn't need to do anything
+  def onAnimChange(control, channel, anim_name)
+    Waves.echo("ANIMATION CHANGE", :cyan)
+    Waves.echo("Control: #{control}", :yellow)
+    Waves.echo("Channel: #{channel}", :yellow)
+    Waves.echo("Name: #{anim_name}", :yellow)
+  end
+  
+  def onAnimCycleDone(control, channel, anim_name)
     if channel.animation_name.eql?("StandUpBack") || channel.animation_name.eql?("StandUpFront")
-      channel.loop_mode = LoopMode::DontLoop
+      channel.loop_mode = ComJme3Animation::LoopMode::DontLoop
       channel.set_anim("IdleTop", 5)
-      channel.loop_mode = LoopMode::Loop
+      channel.loop_mode = ComJme3Animation::LoopMode::Loop
     end
   end
   
@@ -216,7 +250,7 @@ class Sample14a < SimpleApplication
         bullet_node.ccd_motion_threshold = 0.001
         bullet_node.linear_velocity = @parent.cam.direction.mult(80)
         bulletg.add_control(bullet_node)
-        root_node.attach_child(bulletg)
+        @parent.root_node.attach_child(bulletg)
         @parent.bullet_app_state.physics_space.add(bullet_node)
       end
       if name.eql?("boom") && !is_pressed
