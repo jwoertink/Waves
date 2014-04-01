@@ -14,23 +14,23 @@ You should be good at this point.
 == Running Waves
 The main application can be run by
   jruby bin/waves
-  
+
 You can view other samples by passing the sample number as an argument
   jruby bin/waves 8
-  
+
 Normal camera operations use W A S D to move. To exit just hit esc. Some examples use space bar, or J and K keys. Read sample file in lib/samples for more info.
-  
+
 == Requirements
-  OSX (Because I haven't tried this on anything else)
-  JRuby 1.6+
+  OSX 10.8.0+ (Because I haven't tried this on anything else)
+  JRuby 1.7+
   Bundler gem
 
 == jMonkeyEngine
-http://jmonkeyengine.org/wiki/doku.php/jme3:beginner:hello_simpleapplication
+http://hub.jmonkeyengine.org/wiki/doku.php/jme3:beginner:hello_simpleapplication
 
 == Other Notes
 The Nifty-gui must be implemented in Java (for now) to work. This requires taking the lib/samples/nifty/StartScreenController.java and compiling it into the package/classes/java/StartScreenController.class file. If this file is missing, then to compile, run
-  javac -classpath vendor/jme3_2012-10-19.jar  lib/samples/nifty/StartScreenController.java
+  javac -classpath vendor/jme3_2014-3-31.jar  lib/samples/nifty/StartScreenController.java
   mv lib/samples/nifty/StartScreenController.class package/classes/java
 
 == Current (known) Issues
@@ -38,6 +38,7 @@ The Nifty-gui must be implemented in Java (for now) to work. This requires takin
 * Nifty/JRuby example (sample 13a) throws nasty exception
 * Rag-doll sample loads, but isn't useable
 * Sample 16 isn't working
+* Sample 17 is missing some stuff
 
 == Contributing to waves
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
@@ -50,6 +51,6 @@ The Nifty-gui must be implemented in Java (for now) to work. This requires takin
 
 == Copyright
 
-Copyright (c) 2012 Jeremy Woertink. See LICENSE.txt for
+Copyright (c) 2014 Jeremy Woertink. See LICENSE.txt for
 further details.
 
