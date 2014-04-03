@@ -3,12 +3,9 @@ This is just some JRuby(http://jruby.org/) and jMonkeyEngine(http://jmonkeyengin
 Currently these are all samples from the jMonkeyEngine Hello tutorials re-written in JRuby. There are a few small modifications.
 
 == Installation
-(rvm not required, but it's awesome)
-  rvm install jruby-head
+  install jruby-head
   git clone git://github.com/jwoertink/Waves.git
   cd Waves
-  gem install bundler
-  bundle
 
 You should be good at this point.
 == Running Waves
@@ -21,9 +18,9 @@ You can view other samples by passing the sample number as an argument
 Normal camera operations use W A S D to move. To exit just hit esc. Some examples use space bar, or J and K keys. Read sample file in lib/samples for more info.
 
 == Requirements
-  OSX 10.8.0+ (Because I haven't tried this on anything else)
+  OSX 10.8.0+ / Windows 7+
+  A decent graphics card
   JRuby 1.7+
-  Bundler gem
 
 == jMonkeyEngine
 http://hub.jmonkeyengine.org/wiki/doku.php/jme3:beginner:hello_simpleapplication
