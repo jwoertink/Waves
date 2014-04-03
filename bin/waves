@@ -2,14 +2,7 @@
 # -*- coding: utf-8 -*-
 
 require 'rubygems'
-
-root_path = if Gem.win_platform?
-	File.join('..', 'lib')
-else
-	File.join(File.dirname(__FILE__), "..", "lib")
-end
-
-$:.unshift(root_path)
+$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 require 'waves'
 
 if ARGV[0] == "samples"
