@@ -3,11 +3,12 @@ require 'jruby/core_ext'
 
 PROJECT_ROOT = File.expand_path('..', File.dirname(__FILE__))
 $CLASSPATH << File.join(PROJECT_ROOT, "package", "classes", "java")
-$CLASSPATH << File.join(PROJECT_ROOT, "vendor", "jme3-2014-3-31.jar")
 
-require File.join(PROJECT_ROOT, 'vendor', 'jme3-2014-3-31.jar')
+require 'jmonkeyengine'
+require 'jmonkeyengine/testdata'
 
 module Waves
+  include JMonkeyEngine::TestData
   VERSION = "0.4.0"
 
   COLORS = {
